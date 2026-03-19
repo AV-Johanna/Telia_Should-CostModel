@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telia Antenna Should-Cost Model</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --telia-purple: #7B2D8B;
+  --telia-purple-light: #9B4DAB;
+  --telia-purple-pale: #F3EBF6;
+  --telia-purple-dark: #4A1A55;
+  --accent-lime: #C8F04A;
+  --accent-lime-dark: #8AB82E;
+  --bg: #F7F6F3;
+  --bg-card: #FFFFFF;
+  --bg-dark: #1A1020;
+  --text-primary: #18141C;
+  --text-secondary: #5A5262;
+  --text-muted: #9188A0;
+  --border: #E2DCE8;
+  --border-strong: #C8BDD4;
+  --red: #D43B3B;
+  --green: #2A8A52;
+  --amber: #C97820;
+  --blue: #2563EB;
+  --success-bg: #EAF7F0;
+  --warning-bg: #FEF7EC;
+  --danger-bg: #FEECEC;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── NAVIGATION ── */
+.nav {
+  background: var(--telia-purple-dark);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--accent-lime);
+}
+.nav-logo {
+  padding: 0 24px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: #fff;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.nav-logo span { color: var(--accent-lime); }
+.nav-tabs { display: flex; }
+.nav-tab {
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.nav-tab:hover { color: rgba(255,255,255,0.9); }
+.nav-tab.active { color: var(--accent-lime); border-bottom-color: var(--accent-lime); }
+.nav-meta {
+  margin-left: auto;
+  padding: 0 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ── PAGE SECTIONS ── */
+.page { display: none; padding: 32px; max-width: 1400px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* ── SECTION HEADERS ── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+}
+.section-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+}
+.card-body { padding: 20px; }
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.col-span-2 { grid-column: span 2; }
+.col-span-3 { grid-column: span 3; }
+
+/* ── KPI CARDS ── */
+.kpi { display: flex; flex-direction: column; gap: 4px; }
+.kpi-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+.kpi-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 28px; color: var(--telia-purple); letter-spacing: -1px; }
+.kpi-sub { font-size: 12px; color: var(--text-muted); }
+.kpi-delta { font-size: 12px; font-weight: 500; }
+.kpi-delta.up { color: var(--red); }
+.kpi-delta.down { color: var(--green); }
+
+/* ── CONTROLS ── */
+.control-group { margin-bottom: 16px; }
+.control-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.control-select, .control-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  appearance: none;
+  cursor: pointer;
+}
+.control-select:focus, .control-input:focus {
+  outline: 2px solid var(--telia-purple);
+  outline-offset: 1px;
+}
+.range-wrapper { display: flex; align-items: center; gap: 10px; }
+.control-range { flex: 1; accent-color: var(--telia-purple); }
+.range-val { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--telia-purple); font-weight: 500; min-width: 48px; text-align: right; }
+
+/* ── PILL TAGS ── */
+.pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.pill-purple { background: var(--telia-purple-pale); color: var(--telia-purple-dark); }
+.pill-green { background: var(--success-bg); color: var(--green); }
+.pill-amber { background: var(--warning-bg); color: var(--amber); }
+.pill-red { background: var(--danger-bg); color: var(--red); }
+.pill-gray { background: #F0EDF4; color: var(--text-secondary); }
+
+/* ── TABLES ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.data-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg); }
+.data-table .num { text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
+.data-table .row-group td {
+  background: var(--telia-purple-pale);
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  color: var(--telia-purple-dark);
+  letter-spacing: 0.2px;
+}
+.data-table .row-total td {
+  background: var(--telia-purple-dark);
+  color: white;
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+}
+.data-table .row-sub td { padding-left: 28px; }
+.data-table .row-sub2 td { padding-left: 44px; color: var(--text-secondary); }
+
+/* ── WATERFALL CHART ── */
+.waterfall { display: flex; flex-direction: column; gap: 6px; }
+.wf-row { display: flex; align-items: center; gap: 10px; }
+.wf-label { font-size: 12px; color: var(--text-secondary); width: 160px; flex-shrink: 0; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wf-bar-wrap { flex: 1; display: flex; align-items: center; }
+.wf-bar {
+  height: 22px;
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.4s ease;
+  position: relative;
+}
+.wf-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-secondary); margin-left: 8px; white-space: nowrap; }
+.wf-offset { background: transparent; }
+
+/* ── SENSITIVITY TABLE ── */
+.sens-cell {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+}
+.sens-pos-high { background: #FEECEC; color: #A32D2D; }
+.sens-pos-med { background: #FEF5F0; color: #C06030; }
+.sens-neg-high { background: #EAF7F0; color: #1A6B3C; }
+.sens-neg-med { background: #F0FBF5; color: #2A7A48; }
+.sens-neutral { background: var(--bg); color: var(--text-muted); }
+
+/* ── SOURCE BADGES ── */
+.source-note {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+  display: block;
+  margin-top: 2px;
+}
+
+/* ── INTRO PAGE SPECIFIC ── */
+.intro-hero {
+  background: linear-gradient(135deg, var(--telia-purple-dark) 0%, var(--telia-purple) 100%);
+  border-radius: 16px;
+  padding: 40px;
+  color: white;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.intro-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(200, 240, 74, 0.12);
+}
+.intro-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: 60px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(200, 240, 74, 0.08);
+}
+.intro-hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.intro-hero h1 span { color: var(--accent-lime); }
+.intro-hero p { color: rgba(255,255,255,0.72); font-size: 15px; max-width: 600px; }
+.intro-meta { display: flex; gap: 24px; margin-top: 24px; }
+.intro-meta-item { }
+.intro-meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.45); }
+.intro-meta-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: white; margin-top: 2px; }
+
+.coverage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.coverage-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.coverage-icon { font-size: 20px; margin-bottom: 8px; }
+.coverage-label { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.coverage-desc { font-size: 12px; color: var(--text-muted); }
+
+.assumption-list { list-style: none; }
+.assumption-list li {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.assumption-list li:last-child { border-bottom: none; }
+.assumption-list li::before { content: "→"; color: var(--telia-purple); font-weight: 700; flex-shrink: 0; }
+
+.not-covered-list { list-style: none; }
+.not-covered-list li {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.not-covered-list li::before { content: "✕"; color: var(--red); font-weight: 700; flex-shrink: 0; }
+
+/* ── SUPPLIER BENCHMARK ── */
+.supplier-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.supplier-name { font-size: 12px; color: var(--text-secondary); width: 140px; flex-shrink: 0; }
+.supplier-bars { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.supplier-bar { height: 8px; border-radius: 2px; transition: width 0.4s ease; }
+
+/* ── REGION COMPARISON ── */
+.region-tab-row { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.region-tab {
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  transition: all 0.15s;
+}
+.region-tab.active {
+  background: var(--telia-purple);
+  color: white;
+  border-color: var(--telia-purple);
+}
+
+/* ── TOOLTIP ── */
+.tooltip-wrap { position: relative; display: inline-block; }
+.tooltip-icon { width: 14px; height: 14px; border-radius: 50%; background: var(--border-strong); color: var(--text-muted); font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: help; vertical-align: middle; margin-left: 4px; }
+.tooltip-box {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-dark);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  width: 240px;
+  line-height: 1.5;
+  z-index: 99;
+  margin-bottom: 6px;
+}
+.tooltip-wrap:hover .tooltip-box { display: block; }
+
+/* ── SCROLLABLE ── */
+.scrollable { overflow-x: auto; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ── HIGHLIGHT BOX ── */
+.highlight-box {
+  background: var(--telia-purple-pale);
+  border-left: 3px solid var(--telia-purple);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  color: var(--telia-purple-dark);
+  margin: 12px 0;
+}
+
+/* ── ACTIVE ANTENNA BADGE ── */
+.antenna-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+}
+.antenna-type-badge.active {
+  background: var(--telia-purple);
+  color: white;
+  border-color: var(--telia-purple);
+}
+.antenna-type-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+
+/* ── FLEX UTILS ── */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.gap-20 { gap: 20px; }
+.gap-24 { gap: 24px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+
+/* ── MINI CHART CANVAS ── */
+canvas.chart { width: 100%; height: 100%; display: block; }
+
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <div class="nav-logo">
+    <span>■</span> Telia<span>.</span>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showPage('intro')">① Introduction</div>
+    <div class="nav-tab" onclick="showPage('dashboard')">② Dashboard</div>
+    <div class="nav-tab" onclick="showPage('cost_model')">③ Cost Model</div>
+    <div class="nav-tab" onclick="showPage('bom')">④ Bill of Materials</div>
+    <div class="nav-tab" onclick="showPage('suppliers')">⑤ Supplier Benchmarks</div>
+    <div class="nav-tab" onclick="showPage('data_inputs')">⑥ Data Inputs</div>
+  </div>
+  <div class="nav-meta">v2.2 · Telia Procurement · Mar 2026 · LTM/FY2024 supplier data</div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 1: INTRODUCTION
+════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-intro">
+  <div class="intro-hero">
+    <h1>Antenna Should-Cost<br><span>Model</span></h1>
+    <p>A procurement intelligence tool for understanding the true cost structure of passive and active antennas across Telia's operating markets. Built to support supplier negotiations and sourcing decisions.</p>
+    <div class="intro-meta">
+      <div class="intro-meta-item">
+        <div class="intro-meta-label">Owner</div>
+        <div class="intro-meta-val">Telia Procurement</div>
+      </div>
+      <div class="intro-meta-item">
+        <div class="intro-meta-label">Version</div>
+        <div class="intro-meta-val">2.1 — Jan 2026</div>
+      </div>
+      <div class="intro-meta-item">
+        <div class="intro-meta-label">Data vintage</div>
+        <div class="intro-meta-val">Q4 2024 / FY2023-24</div>
+      </div>
+      <div class="intro-meta-item">
+        <div class="intro-meta-label">Suppliers benchmarked</div>
+        <div class="intro-meta-val">11 suppliers (10 in median)</div>
+      </div>
+      <div class="intro-meta-item">
+        <div class="intro-meta-label">Antenna types</div>
+        <div class="intro-meta-val">6 variants</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3 mb-24">
+    <!-- Antenna types covered -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Antenna types covered</div></div>
+      <div class="card-body flex-col gap-8">
+        <div class="coverage-item">
+          <div class="coverage-label">Passive single-band</div>
+          <div class="coverage-desc">2-port and 4-port. Used for legacy 2G/3G coverage and rural deployments.</div>
+        </div>
+        <div class="coverage-item">
+          <div class="coverage-label">Passive multi-band (RET)</div>
+          <div class="coverage-desc">8-port and 12-port with Remote Electrical Tilt. Dominant in Telia's current network.</div>
+        </div>
+        <div class="coverage-item">
+          <div class="coverage-label">Active Massive MIMO</div>
+          <div class="coverage-desc">32T32R and 64T64R. Separate cost logic — integrated radios, power amplifiers, beamforming chips. 5G urban densification.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regions covered -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Regions & markets covered</div></div>
+      <div class="card-body">
+        <div class="mb-12">
+          <div class="pill pill-purple mb-8">Nordics</div>
+          <div class="coverage-desc mb-8">Sweden, Finland, Norway, Denmark — EU logistics, 0% customs duty (ITA)</div>
+        </div>
+        <div class="mb-12">
+          <div class="pill pill-amber mb-8">Baltics</div>
+          <div class="coverage-desc mb-8">Estonia, Latvia, Lithuania — EU member states, intra-EU freight</div>
+        </div>
+        <div>
+          <div class="pill pill-gray mb-8">Central Asia</div>
+          <div class="coverage-desc">Kazakhstan — rail freight corridor, EAEU tariff (~5%), higher logistics cost</div>
+        </div>
+        <div class="highlight-box mt-16">
+          Logistics costs vary significantly: China→Sweden ~SEK 297/unit vs. Europe→Sweden ~SEK 85/unit
+        </div>
+      </div>
+    </div>
+
+    <!-- Key assumptions -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Key assumptions</div></div>
+      <div class="card-body">
+        <ul class="assumption-list">
+          <li>~85% of global antenna production is in China. Model defaults to Chinese manufacturing with switchable origin.</li>
+          <li>Labour cost based on country manufacturing wage index (ILO/national statistics, 2023).</li>
+          <li>Raw material prices from LME, Shanghai Metal Market, ICIS — 2023 annual averages.</li>
+          <li>Corporate OH (SG&amp;A, R&amp;D) derived from 11 supplier annual reports, expressed as % of revenue.</li>
+          <li>Logistics = sea freight + inland haulage + customs duty. Per-unit estimates based on antenna weight class.</li>
+          <li>Passive antennas: standard BoM framework. Active MIMO: separate cost logic for electronics-heavy components.</li>
+          <li>All outputs in SEK. USD used as calculation base with Riksbank 2023 average exchange rate (10.61 SEK/USD).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-24">
+    <!-- Not covered -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">What this model does NOT cover</div></div>
+      <div class="card-body">
+        <ul class="not-covered-list">
+          <li>Installation and site integration costs (civil works, mounting, cabling)</li>
+          <li>Software licensing for active/MIMO antennas (beamforming algorithms, network management)</li>
+          <li>Warranty, maintenance or service contract costs post-delivery</li>
+          <li>Telia's internal cost of procurement operations or project management</li>
+          <li>Radio Unit (RU/RRU) costs — antennas only, not the full RAN stack</li>
+          <li>Custom or non-standard antenna designs (model covers standard commercial variants)</li>
+          <li>Supplier profit margin / recommended selling price — cost build-up only</li>
+          <li>Currency hedging costs or FX volatility adjustments</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Input data sources</div></div>
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>Input type</th><th>Source</th><th>Vintage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Aluminum prices</td><td>LME / Shanghai Metal Market</td><td>2023 avg</td></tr>
+            <tr><td>Copper prices</td><td>LME copper spot</td><td>2023 avg</td></tr>
+            <tr><td>Plastics (POM, PA66)</td><td>ICIS Asian spot</td><td>2023 avg</td></tr>
+            <tr><td>Steel</td><td>Shanghai Steel Exchange</td><td>2023 avg</td></tr>
+            <tr><td>Labour rates</td><td>ILO, national statistics bureaus</td><td>2023</td></tr>
+            <tr><td>Freight costs</td><td>Freightos index + industry est.</td><td>2023 est.</td></tr>
+            <tr><td>Customs duties</td><td>EU ITA, EAEU tariff schedule</td><td>Current</td></tr>
+            <tr><td>Supplier financials</td><td>LTM/FY2024 where available; FY2023 otherwise (11 suppliers)</td><td>FY2024 / FY2023</td></tr>
+            <tr><td>Exchange rates</td><td>S&P Global CPW (CNY/USD Q4 2024) + Riksbank (SEK/USD)</td><td>Q4 2024</td></tr>
+            <tr><td>BoM weights/specs</td><td>Original Kathrein model + industry benchmarks</td><td>Updated 2024</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to use -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">How to use this model</div></div>
+    <div class="card-body">
+      <div class="grid-4">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:var(--telia-purple);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;">1</div>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Set your parameters</div>
+            <div style="font-size:12px;color:var(--text-muted);">Go to <strong>Dashboard</strong>. Select antenna type, production country, destination region, and order volume. The model recalculates instantly.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:var(--telia-purple);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;">2</div>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Review cost build-up</div>
+            <div style="font-size:12px;color:var(--text-muted);">The <strong>Cost Model</strong> tab shows the full cost waterfall with each bucket's methodology clearly explained.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:var(--telia-purple);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;">3</div>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Run sensitivity analysis</div>
+            <div style="font-size:12px;color:var(--text-muted);">In <strong>Dashboard</strong>, use the sensitivity sliders to stress-test against commodity price changes, labour rate shifts, and logistics cost variations.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="background:var(--telia-purple);color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;">4</div>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:4px;">Benchmark suppliers</div>
+            <div style="font-size:12px;color:var(--text-muted);"><strong>Supplier Benchmarks</strong> shows how each supplier's cost structure differs — useful for identifying negotiation leverage points.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 2: DASHBOARD
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-dashboard">
+  <div class="section-header mb-20">
+    <div class="section-title">Dashboard</div>
+    <div class="section-sub">Interactive cost overview — adjust parameters to recalculate</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:start;">
+
+    <!-- LEFT: Controls panel -->
+    <div class="flex-col gap-16">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Parameters</div></div>
+        <div class="card-body">
+          <div class="control-group">
+            <label class="control-label">Antenna Type</label>
+            <select class="control-select" id="ctrl-antenna" onchange="recalc()">
+              <option value="passive_2port">Passive 2-port (single-band)</option>
+              <option value="passive_4port">Passive 4-port (single-band)</option>
+              <option value="passive_8port">Passive 8-port (multi-band)</option>
+              <option value="passive_12port" selected>Passive 12-port RET</option>
+              <option value="active_mimo_32t32r">Active MIMO 32T32R</option>
+              <option value="active_mimo_64t64r">Active MIMO 64T64R</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Production Country</label>
+            <select class="control-select" id="ctrl-origin" onchange="recalc()">
+              <option value="china" selected>China (default ~85% of supply)</option>
+              <option value="vietnam">Vietnam</option>
+              <option value="india">India</option>
+              <option value="germany">Germany / W. Europe</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Destination Region</label>
+            <select class="control-select" id="ctrl-dest" onchange="recalc()">
+              <option value="sweden" selected>Sweden</option>
+              <option value="finland">Finland</option>
+              <option value="norway">Norway</option>
+              <option value="denmark">Denmark</option>
+              <option value="estonia">Estonia</option>
+              <option value="latvia">Latvia</option>
+              <option value="lithuania">Lithuania</option>
+              <option value="kazakhstan">Kazakhstan</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Material Quality</label>
+            <select class="control-select" id="ctrl-quality" onchange="recalc()">
+              <option value="low">Low (entry-level spec)</option>
+              <option value="medium" selected>Medium (standard)</option>
+              <option value="high">High (premium/export)</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Order Volume (units)</label>
+            <div class="range-wrapper">
+              <input type="range" class="control-range" id="ctrl-volume" min="100" max="10000" step="100" value="1000" oninput="document.getElementById('ctrl-volume-val').textContent=parseInt(this.value).toLocaleString();recalc()">
+              <span class="range-val" id="ctrl-volume-val">1,000</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">Corporate OH Benchmark</label>
+            <select class="control-select" id="ctrl-supplier-bench" onchange="recalc()">
+              <option value="all_median">All suppliers — median</option>
+              <option value="chinese_median">Chinese suppliers only — median</option>
+              <option value="tongyu">Tongyu</option>
+              <option value="comba">Comba</option>
+              <option value="commscope">CommScope</option>
+              <option value="mobi">Mobi</option>
+              <option value="hengxin">Hengxin</option>
+              <option value="ace">Ace Technologies</option>
+              <option value="wnc">WNC</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sensitivity sliders -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">Sensitivity (%)</div></div>
+        <div class="card-body flex-col gap-12">
+          <div>
+            <div class="flex justify-between mb-8"><span class="control-label" style="margin:0">Aluminum price</span><span class="range-val" id="s-al-val">0%</span></div>
+            <input type="range" class="control-range" id="s-al" min="-40" max="40" step="5" value="0" oninput="document.getElementById('s-al-val').textContent=this.value+'%';recalc()">
+          </div>
+          <div>
+            <div class="flex justify-between mb-8"><span class="control-label" style="margin:0">Copper price</span><span class="range-val" id="s-cu-val">0%</span></div>
+            <input type="range" class="control-range" id="s-cu" min="-40" max="40" step="5" value="0" oninput="document.getElementById('s-cu-val').textContent=this.value+'%';recalc()">
+          </div>
+          <div>
+            <div class="flex justify-between mb-8"><span class="control-label" style="margin:0">Labour cost</span><span class="range-val" id="s-lab-val">0%</span></div>
+            <input type="range" class="control-range" id="s-lab" min="-30" max="50" step="5" value="0" oninput="document.getElementById('s-lab-val').textContent=this.value+'%';recalc()">
+          </div>
+          <div>
+            <div class="flex justify-between mb-8"><span class="control-label" style="margin:0">Logistics cost</span><span class="range-val" id="s-log-val">0%</span></div>
+            <input type="range" class="control-range" id="s-log" min="-30" max="60" step="5" value="0" oninput="document.getElementById('s-log-val').textContent=this.value+'%';recalc()">
+          </div>
+          <div>
+            <div class="flex justify-between mb-8"><span class="control-label" style="margin:0">SEK/USD rate</span><span class="range-val" id="s-fx-val">0%</span></div>
+            <input type="range" class="control-range" id="s-fx" min="-20" max="20" step="2" value="0" oninput="document.getElementById('s-fx-val').textContent=this.value+'%';recalc()">
+          </div>
+          <button onclick="resetSensitivity()" style="padding:6px 14px;border-radius:6px;border:1px solid var(--border-strong);background:var(--bg);cursor:pointer;font-size:12px;color:var(--text-secondary);">Reset all</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Output area -->
+    <div class="flex-col gap-16">
+
+      <!-- KPI row -->
+      <div class="grid-4">
+        <div class="card card-body">
+          <div class="kpi">
+            <div class="kpi-label">Total cost / unit</div>
+            <div class="kpi-value" id="kpi-total">—</div>
+            <div class="kpi-sub">SEK, delivered</div>
+          </div>
+        </div>
+        <div class="card card-body">
+          <div class="kpi">
+            <div class="kpi-label">Direct material</div>
+            <div class="kpi-value" id="kpi-material" style="font-size:22px;">—</div>
+            <div class="kpi-sub">SEK / unit</div>
+          </div>
+        </div>
+        <div class="card card-body">
+          <div class="kpi">
+            <div class="kpi-label">Labour + mfg</div>
+            <div class="kpi-value" id="kpi-labour" style="font-size:22px;">—</div>
+            <div class="kpi-sub">SEK / unit</div>
+          </div>
+        </div>
+        <div class="card card-body">
+          <div class="kpi">
+            <div class="kpi-label">Corporate OH</div>
+            <div class="kpi-value" id="kpi-oh" style="font-size:22px;">—</div>
+            <div class="kpi-sub">SEK / unit</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waterfall chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Cost waterfall (SEK / unit)</div>
+          <div id="dash-antenna-label" class="pill pill-purple">—</div>
+        </div>
+        <div class="card-body" id="waterfall-container">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Bottom grid: Sensitivity matrix + Antenna comparison -->
+      <div class="grid-2">
+        <!-- Sensitivity matrix -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Sensitivity impact on total cost</div></div>
+          <div class="card-body scrollable">
+            <table class="data-table" id="sens-table">
+              <thead>
+                <tr>
+                  <th>Factor</th>
+                  <th class="num">−20%</th>
+                  <th class="num">−10%</th>
+                  <th class="num">Base</th>
+                  <th class="num">+10%</th>
+                  <th class="num">+20%</th>
+                </tr>
+              </thead>
+              <tbody id="sens-tbody">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Antenna type comparison -->
+        <div class="card">
+          <div class="card-header"><div class="card-title">Antenna type cost comparison</div></div>
+          <div class="card-body" id="antenna-compare">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 3: COST MODEL
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-cost_model">
+  <div class="section-header mb-20">
+    <div class="section-title">Cost Model</div>
+    <div class="section-sub">Full cost build-up with methodology — based on current dashboard parameters</div>
+  </div>
+
+  <div class="grid-2 mb-16" style="grid-template-columns:1fr 2fr;">
+    <!-- Current settings summary -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Current parameters</div></div>
+      <div class="card-body" id="cm-params">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Total summary -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Cost summary</div></div>
+      <div class="card-body scrollable">
+        <table class="data-table" id="cm-summary-table">
+          <thead>
+            <tr><th>Cost bucket</th><th>Methodology</th><th class="num">SEK / unit</th><th class="num">% of total</th></tr>
+          </thead>
+          <tbody id="cm-summary-tbody"><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed cost breakdown -->
+  <div class="card mb-16">
+    <div class="card-header">
+      <div class="card-title">Detailed cost build-up</div>
+      <span class="pill pill-purple" id="cm-type-label">—</span>
+    </div>
+    <div class="card-body scrollable">
+      <table class="data-table" id="cm-detail-table">
+        <thead>
+          <tr>
+            <th>Cost bucket / sub-bucket</th>
+            <th>Calculation method</th>
+            <th>Data source</th>
+            <th class="num">USD / unit</th>
+            <th class="num">SEK / unit</th>
+            <th class="num">Share %</th>
+          </tr>
+        </thead>
+        <tbody id="cm-detail-tbody"><!-- JS --></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Logistics detail -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">Logistics &amp; customs detail</div></div>
+    <div class="card-body scrollable">
+      <table class="data-table" id="logistics-table">
+        <thead>
+          <tr><th>Route</th><th>Mode</th><th>Customs duty</th><th class="num">USD / unit</th><th class="num">SEK / unit</th><th>Source</th></tr>
+        </thead>
+        <tbody id="logistics-tbody"><!-- JS --></tbody>
+      </table>
+      <div class="highlight-box mt-16">
+        <strong>Why logistics matter for Telia:</strong> A 12-port antenna shipped China→Sweden costs ~SEK 297/unit in logistics vs ~SEK 85/unit from a European supplier — a difference of SEK 212/unit. At 1,000 units, this is SEK 212,000 in additional delivered cost that should be factored into any China-vs-Europe sourcing decision.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 4: BILL OF MATERIALS
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-bom">
+  <div class="section-header mb-20">
+    <div class="section-title">Bill of Materials</div>
+    <div class="section-sub">Component-level cost breakdown — ~400 line items for passive antennas</div>
+  </div>
+
+  <div class="antenna-type-badges" id="bom-type-tabs">
+    <div class="antenna-type-badge active" onclick="setBomType('passive_12port',this)">12-port RET (default)</div>
+    <div class="antenna-type-badge" onclick="setBomType('passive_8port',this)">8-port</div>
+    <div class="antenna-type-badge" onclick="setBomType('passive_4port',this)">4-port</div>
+    <div class="antenna-type-badge" onclick="setBomType('passive_2port',this)">2-port</div>
+    <div class="antenna-type-badge" onclick="setBomType('active_mimo_32t32r',this)">MIMO 32T32R</div>
+    <div class="antenna-type-badge" onclick="setBomType('active_mimo_64t64r',this)">MIMO 64T64R</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">BoM detail — <span id="bom-title-label">12-port RET</span></div>
+      <div class="flex gap-8">
+        <select class="control-select" style="width:180px" id="bom-filter-cat" onchange="renderBom()">
+          <option value="all">All categories</option>
+          <option value="Elements">Elements</option>
+          <option value="Feeder Circuit">Feeder Circuit</option>
+          <option value="Housing">Housing</option>
+          <option value="Phase Shifter">Phase Shifter</option>
+          <option value="RCU">RCU</option>
+          <option value="Reflector">Reflector</option>
+          <option value="Screen">Screen</option>
+          <option value="Packaging">Packaging</option>
+          <option value="Supporting">Supporting</option>
+          <option value="Others">Others</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body scrollable">
+      <table class="data-table" id="bom-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Category</th>
+            <th>Part name</th>
+            <th>Material</th>
+            <th>Process</th>
+            <th class="num">Weight (g)</th>
+            <th class="num">Mat. price (USD/t)</th>
+            <th class="num">Unit cost (USD)</th>
+            <th class="num">Unit cost (SEK)</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="bom-tbody"><!-- JS --></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 5: SUPPLIER BENCHMARKS
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-suppliers">
+  <div class="section-header mb-20">
+    <div class="section-title">Supplier Benchmarks</div>
+    <div class="section-sub">Corporate financials from 11 antenna manufacturers — used to calibrate overhead rates</div>
+  </div>
+
+  <div class="card mb-20">
+    <div class="card-header"><div class="card-title">How corporate overhead is calculated</div></div>
+    <div class="card-body">
+      <div class="highlight-box">
+        <strong>Methodology:</strong> SG&amp;A, R&amp;D and Other Corporate OH are sourced from each supplier's annual report as a percentage of total revenue. These percentages are then converted to a cost-per-antenna by applying them to the direct material cost. This mirrors how suppliers structure their internal costing — overhead scales roughly with material throughput. The model lets you choose which supplier or peer group to use as your benchmark.
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-20">
+    <div class="card-header">
+      <div class="card-title">Supplier financial overview (% of revenue, 2022–2023)</div>
+    </div>
+    <div class="card-body scrollable">
+      <table class="data-table" id="supplier-table">
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th>HQ</th>
+            <th>Exchange</th>
+            <th class="num">Mkt share</th>
+            <th class="num">SG&amp;A %</th>
+            <th class="num">R&amp;D %</th>
+            <th class="num">Other OH %</th>
+            <th class="num">Total Corp OH %</th>
+            <th class="num">EBITDA %</th>
+            <th class="num">Dir. mat %</th>
+            <th>Data quality</th>
+          </tr>
+        </thead>
+        <tbody id="supplier-tbody"><!-- JS --></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- SG&A comparison bars -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">SG&amp;A + R&amp;D + Other OH (% of revenue)</div></div>
+      <div class="card-body" id="supplier-bars-container"><!-- JS --></div>
+    </div>
+    <!-- EBITDA comparison -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">EBITDA margin comparison</div></div>
+      <div class="card-body" id="ebitda-bars-container"><!-- JS --></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE 6: DATA INPUTS
+════════════════════════════════════════════════════════ -->
+<div class="page" id="page-data_inputs">
+  <div class="section-header mb-20">
+    <div class="section-title">Data Inputs</div>
+    <div class="section-sub">All raw inputs used in the model — sources, values, and update guidance</div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <!-- Raw material prices -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Raw material prices (USD/tonne, 2023 avg)</div></div>
+      <div class="card-body scrollable">
+        <table class="data-table">
+          <thead><tr><th>Material</th><th class="num">USD/tonne</th><th class="num">SEK/tonne</th><th>Source</th></tr></thead>
+          <tbody id="raw-mat-tbody"><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Labour rates -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Manufacturing labour rates (USD/hour, 2023)</div></div>
+      <div class="card-body scrollable">
+        <table class="data-table">
+          <thead><tr><th>Country</th><th class="num">USD/hr</th><th class="num">SEK/hr</th><th>Source</th></tr></thead>
+          <tbody id="labour-tbody"><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-16">
+    <!-- Exchange rates -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Exchange rates (vs SEK, 2023 annual avg)</div></div>
+      <div class="card-body scrollable">
+        <table class="data-table">
+          <thead><tr><th>Currency pair</th><th class="num">Rate</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>USD → SEK</td><td class="num">10.61</td><td>Riksbank 2023 avg</td></tr>
+            <tr><td>EUR → SEK</td><td class="num">11.48</td><td>Riksbank 2023 avg</td></tr>
+            <tr><td>CNY → SEK</td><td class="num">1.46</td><td>Riksbank 2023 avg</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Logistics rates -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Logistics cost estimates (USD / antenna unit)</div></div>
+      <div class="card-body scrollable">
+        <table class="data-table">
+          <thead><tr><th>Route</th><th class="num">USD/unit</th><th class="num">SEK/unit</th><th>Source</th></tr></thead>
+          <tbody id="logistics-input-tbody"><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Antenna type parameters -->
+  <div class="card mb-16">
+    <div class="card-header"><div class="card-title">Antenna type parameters</div></div>
+    <div class="card-body scrollable">
+      <table class="data-table">
+        <thead><tr><th>Type</th><th class="num">Ports</th><th class="num">Freq bands</th><th class="num">Labour hrs</th><th class="num">Weight (kg)</th><th>Source / notes</th></tr></thead>
+        <tbody id="antenna-params-tbody"><!-- JS --></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Update guidance -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">Model update guidance</div></div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead><tr><th>Input type</th><th>Recommended update frequency</th><th>Where to source</th></tr></thead>
+        <tbody>
+          <tr><td>Aluminum & copper prices</td><td><span class="pill pill-red">Quarterly</span></td><td>LME (lme.com), Shanghai Metal Market (metal.com)</td></tr>
+          <tr><td>Plastics prices (POM, PA66)</td><td><span class="pill pill-amber">Semi-annual</span></td><td>ICIS pricing (icis.com), Asian spot market</td></tr>
+          <tr><td>Labour rates</td><td><span class="pill pill-green">Annual</span></td><td>ILO Statistics (ilostat.ilo.org), national statistics bureaus</td></tr>
+          <tr><td>Logistics rates</td><td><span class="pill pill-amber">Semi-annual</span></td><td>Freightos (freightos.com), carrier quotes</td></tr>
+          <tr><td>Exchange rates</td><td><span class="pill pill-amber">Semi-annual</span></td><td>Riksbank (riksbank.se/en/statistics)</td></tr>
+          <tr><td>Supplier financials</td><td><span class="pill pill-green">Annual</span></td><td>Annual reports: SZSE, HKEX, NASDAQ, TWSE, KOSDAQ, DART</td></tr>
+          <tr><td>Customs duties</td><td><span class="pill pill-green">Annual</span></td><td>EU ITA agreement, EAEU tariff schedule (eurasiancommission.org)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const USD_SEK = 11.04; // Riksbank Q4 2024 average (updated from 10.61 in 2023)
+
+const RAW_MATERIALS = {
+  // ── Updated from S&P Global Market Intelligence, Commodity Price Watch, January 2026 ──
+  // Asia sheet, Q4 2024 actuals. CNY prices converted at Q4 2024 rate: 7.1922 CNY/USD
+  aluminum_ADC12:     { price: 2855, label: "Aluminum — ADC12 die casting",   source: "S&P Global CPW Jan 2026, SHFE Q4 2024: 20,536 CNY/t ÷ 7.19 CNY/USD. ADC12 alloy at ~100% of primary Al price." },
+  aluminum_AL6061:    { price: 3080, label: "Aluminum — AL6061 machining",    source: "S&P Global CPW Jan 2026, Q4 2024 SHFE Al + ~8% alloying/machining premium." },
+  aluminum_AL5052:    { price: 3020, label: "Aluminum — AL5052 sheet",        source: "S&P Global CPW Jan 2026, Q4 2024 SHFE Al + ~6% sheet/rolling premium." },
+  steel_HDG:          { price: 548,  label: "Steel — Hot-dip galvanized",     source: "S&P Global CPW Jan 2026, Asia Q4 2024: Hot-dipped galvanized steel 548 USD/t." },
+  steel_Q235:         { price: 439,  label: "Steel — Q235 structural",        source: "S&P Global CPW Jan 2026, Asia Q4 2024: Hot-rolled coiled steel 439 USD/t (Q235 proxy)." },
+  steel_SUS304:       { price: 1798, label: "Steel — SUS304 stainless",       source: "S&P Global CPW Jan 2026, Asia Q4 2024: Stainless steel sheet 304, China 1,798 USD/t." },
+  copper_H65:         { price: 10492,label: "Copper — H65 brass alloy",       source: "S&P Global CPW Jan 2026, SHFE Q4 2024: 75,461 CNY/t ÷ 7.19. H65 brass at ~100% copper LME equivalent." },
+  copper_PTFE:        { price: 13200,label: "Copper — PTFE laminate (PCB)",   source: "S&P Global CPW Jan 2026, SHFE Cu Q4 2024 + ~26% PTFE laminate premium (Rogers/Taconic market pricing)." },
+  plastics_POM:       { price: 1730, label: "Plastics — POM (Delrin)",        source: "S&P Global CPW Jan 2026, derived: PP CFR China Q4 2024 (887 USD/t) × 1.95 ratio (ICIS POM/PP spread, 2024)." },
+  plastics_PA66:      { price: 2262, label: "Plastics — PA66 (Nylon)",        source: "S&P Global CPW Jan 2026, derived: PP CFR China Q4 2024 (887 USD/t) × 2.55 ratio (ICIS PA66/PP spread, 2024)." },
+  plastics_ABS:       { price: 1440, label: "Plastics — ABS",                 source: "S&P Global CPW Jan 2026, derived: HDPE CFR China Q4 2024 (889 USD/t) × 1.62 ratio (ICIS ABS/HDPE spread, 2024)." },
+  plastics_FRP:       { price: 1689, label: "Plastics — Fiberglass (FRP)",    source: "S&P Global CPW Jan 2026, derived: HDPE CFR China Q4 2024 (889 USD/t) × 1.90 (SMC/FRP composite index, 2024)." },
+  packaging_box:      { price: 780,  label: "Packaging — Corrugated board",   source: "S&P Global CPW Jan 2026, HDPE/paper price index proxy; China corrugated board market avg Q4 2024." },
+  packaging_foam:     { price: 1800, label: "Packaging — EPE foam",           source: "S&P Global CPW Jan 2026, LLDPE CFR China Q4 2024 (945 USD/t) × ~1.9 EPE foam conversion premium." },
+};
+
+const LABOUR = {
+  china:    { rate: 6.5,  label: "China",    source: "NBS China, manufacturing avg 2023" },
+  vietnam:  { rate: 3.2,  label: "Vietnam",  source: "Vietnam GSO, manufacturing 2023" },
+  india:    { rate: 2.8,  label: "India",    source: "India Labour Bureau, 2023" },
+  mexico:   { rate: 5.1,  label: "Mexico",   source: "INEGI Mexico, 2023" },
+  germany:  { rate: 42.0, label: "Germany",  source: "Destatis Germany, 2023" },
+  sweden:   { rate: 38.5, label: "Sweden",   source: "SCB Sweden, manufacturing 2023" },
+  finland:  { rate: 36.0, label: "Finland",  source: "Statistics Finland, 2023" },
+  estonia:  { rate: 14.5, label: "Estonia",  source: "Statistics Estonia, 2023" },
+  latvia:   { rate: 12.8, label: "Latvia",   source: "CSB Latvia, 2023" },
+  lithuania:{ rate: 13.5, label: "Lithuania",source: "Statistics Lithuania, 2023" },
+  kazakhstan:{ rate: 5.8, label: "Kazakhstan",source: "Statistics Committee KZ, 2023" },
+};
+
+const LOGISTICS = {
+  china_to_sweden:     { usd: 28, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_finland:    { usd: 30, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_norway:     { usd: 32, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_denmark:    { usd: 27, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_estonia:    { usd: 31, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_latvia:     { usd: 31, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_lithuania:  { usd: 30, mode:"Sea + road", customs:0.0,  source:"Freightos index Q4 2024 est." },
+  china_to_kazakhstan: { usd: 22, mode:"Rail",       customs:0.05, source:"China-CA rail corridor est." },
+  vietnam_to_sweden:   { usd: 25, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_finland:  { usd: 26, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_norway:   { usd: 27, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_denmark:  { usd: 24, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_estonia:  { usd: 26, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_latvia:   { usd: 26, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_lithuania:{ usd: 25, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  vietnam_to_kazakhstan:{ usd:20, mode:"Rail",       customs:0.05, source:"Overland est." },
+  india_to_sweden:     { usd: 22, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_finland:    { usd: 24, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_norway:     { usd: 25, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_denmark:    { usd: 22, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_estonia:    { usd: 23, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_latvia:     { usd: 23, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_lithuania:  { usd: 22, mode:"Sea + road", customs:0.0,  source:"Freightos est." },
+  india_to_kazakhstan: { usd: 18, mode:"Rail/road",  customs:0.05, source:"Overland est." },
+  germany_to_sweden:   { usd: 8,  mode:"Road/sea",   customs:0.0,  source:"Intra-EU road freight est." },
+  germany_to_finland:  { usd: 9,  mode:"Road/sea",   customs:0.0,  source:"Intra-EU est." },
+  germany_to_norway:   { usd: 10, mode:"Road",       customs:0.0,  source:"EU-Norway est." },
+  germany_to_denmark:  { usd: 7,  mode:"Road",       customs:0.0,  source:"Intra-EU est." },
+  germany_to_estonia:  { usd: 7,  mode:"Road",       customs:0.0,  source:"Intra-EU est." },
+  germany_to_latvia:   { usd: 8,  mode:"Road",       customs:0.0,  source:"Intra-EU est." },
+  germany_to_lithuania:{ usd: 7,  mode:"Road",       customs:0.0,  source:"Intra-EU est." },
+  germany_to_kazakhstan:{ usd:18, mode:"Rail/road",  customs:0.05, source:"Overland est." },
+};
+
+const SUPPLIERS = {
+  // ══════════════════════════════════════════════════════════════════
+  // DATA VINTAGE: LTM / FY2024 where available, FY2023 otherwise
+  // All ratios expressed as % of total net revenue
+  // ⚠ = specific flags on data quality or structural changes
+  // Ace Technologies EXCLUDED from median — distressed/loss-making FY2024
+  // ══════════════════════════════════════════════════════════════════
+  tongyu:    {
+    name:"Tongyu Communication", hq:"China", exch:"SZSE (002792)", mkt:12, listed:true,
+    vintage:"FY2023", confidence:"medium",
+    flag:"FY2024 annual report filed on SZSE in Chinese only. FY2023 is most recent English-accessible data. Revenue broadly flat YoY per market data.",
+    sga:0.132, rd:0.055, oh:0.015, ebitda:0.138, dm:0.548, dl:0.046, mfg:0.049,
+    source:"Tongyu Communication AR FY2023, SZSE filing (002792). SG&A 13.2%, R&D 5.5%, EBITDA 13.8%."
+  },
+  hengxin:   {
+    name:"Hengxin Shengze", hq:"China", exch:"SSE (605086)", mkt:5, listed:true,
+    vintage:"FY2023", confidence:"medium",
+    flag:"FY2024 annual report on SSE in Chinese. FY2023 actuals used. Margins under sustained pressure from 5G capex slowdown.",
+    sga:0.088, rd:0.040, oh:0.021, ebitda:0.094, dm:0.574, dl:0.040, mfg:0.039,
+    source:"Hengxin Shengze AR FY2023, SSE filing (605086). SG&A 8.8%, R&D 4.0%, EBITDA 9.4%."
+  },
+  comba:     {
+    name:"Comba Telecom", hq:"China/HK", exch:"HKEx (2342.HK)", mkt:10, listed:true,
+    vintage:"FY2024", confidence:"high",
+    flag:"⚠ FY2024 loss of HK$(564)M. Revenue fell 24% YoY to HK$4.53B. Overhead ratios inflated by fixed costs on lower revenue base. Use with caution as benchmark.",
+    sga:0.168, rd:0.060, oh:0.006, ebitda:0.055, dm:0.741, dl:0.036, mfg:0.042,
+    source:"Comba Telecom Annual Results FY2024, HKEx filing (2342.HK). Revenue HK$4,528M. Admin expenses HK$472M (10.4%). Total opex HK$1,393M (30.8%). Gross margin 25.9%. Operating loss HK$(222)M."
+  },
+  mobi:      {
+    name:"Mobi Antenna Technologies", hq:"China", exch:"SZSE (002918)", mkt:8, listed:true,
+    vintage:"FY2023", confidence:"medium",
+    flag:"FY2024 annual report filed in Chinese only on SZSE. FY2023 actuals used.",
+    sga:0.138, rd:0.060, oh:0.005, ebitda:0.078, dm:0.558, dl:0.042, mfg:0.044,
+    source:"Mobi Antenna Technologies AR FY2023, SZSE filing (002918). SG&A 13.8%, R&D 6.0%, EBITDA 7.8%."
+  },
+  commscope: {
+    name:"CommScope", hq:"USA", exch:"NASDAQ (COMM)", mkt:15, listed:true,
+    vintage:"FY2024", confidence:"high",
+    flag:"⚠ STRUCTURAL CHANGE: CommScope sold its OWN segment (outdoor wireless/base station antennas) and DAS business to Amphenol on 31 Jan 2025. FY2024 figures are for the residual company (CCS/NICS/ANS), which is now primarily a cable and enterprise networking business. Ratios are no longer representative of an antenna manufacturer. Use as Western premium benchmark only.",
+    sga:0.150, rd:0.040, oh:0.062, ebitda:0.166, dm:0.488, dl:0.065, mfg:0.055,
+    source:"CommScope 10-K FY2024, SEC EDGAR (Feb 2025). Revenue $4.21B (continuing ops). Adj EBITDA $700M (16.6%). Core adj EBITDA margin 18.0% in Q4 2024."
+  },
+  ace:       {
+    name:"Ace Technologies", hq:"S. Korea", exch:"KOSDAQ (088800)", mkt:4, listed:true,
+    vintage:"FY2024", confidence:"medium",
+    flag:"⚠ DISTRESSED — EXCLUDED FROM MEDIAN. FY2024 deeply loss-making (EPS: -881 KRW). Revenue KRW 145B with heavily negative EBITDA. LTM to Jun 2025 showing recovery (KRW 178B revenue) but ratios unreliable for benchmarking a healthy supplier cost structure. Included for reference only.",
+    sga:0.118, rd:0.082, oh:0.022, ebitda:-0.045, dm:0.544, dl:0.054, mfg:0.046,
+    source:"Ace Technologies DART filing FY2024 (KOSDAQ 088800). Revenue KRW 145.08B. Loss-making. LTM Jun 2025: KRW 178.3B revenue per stockanalysis.com."
+  },
+  shenglu:   {
+    name:"Shenglu Communication", hq:"China", exch:"Private", mkt:3, listed:false,
+    vintage:"Est. 2024", confidence:"low",
+    flag:"Private company — no public filings. Estimate based on median of comparable listed Chinese antenna OEMs.",
+    sga:0.112, rd:0.038, oh:0.014, ebitda:0.105, dm:0.560, dl:0.044, mfg:0.043,
+    source:"Industry estimate FY2024, benchmarked against Tongyu/Hengxin/Mobi medians. No public disclosure available."
+  },
+  cict:      {
+    name:"CICT Mobile", hq:"China", exch:"SOE", mkt:6, listed:false,
+    vintage:"Est. 2024", confidence:"low",
+    flag:"State-owned enterprise — no public filings. SOE profile: typically lower SG&A, higher R&D mandate, stable margins.",
+    sga:0.108, rd:0.058, oh:0.019, ebitda:0.118, dm:0.550, dl:0.045, mfg:0.046,
+    source:"Industry estimate FY2024. SOE profile based on comparable Chinese telecom equipment SOE benchmarks."
+  },
+  wnc:       {
+    name:"WNC Corporation (fmr. Wistron NeWeb)", hq:"Taiwan", exch:"TWSE (6285)", mkt:5, listed:true,
+    vintage:"FY2024", confidence:"high",
+    flag:"Note: Renamed from Wistron NeWeb to WNC Corporation in May 2025. FY2024 revenue TWD 110.2B (-0.5% YoY). ODM/EMS business model — SG&A structurally lower than pure-play antenna OEMs.",
+    sga:0.062, rd:0.042, oh:0.010, ebitda:0.058, dm:0.572, dl:0.036, mfg:0.040,
+    source:"WNC Corporation (6285.TW) Annual Report FY2024, TWSE. Revenue TWD 110.21B. EBITDA margin 5.77% TTM (TradingView). Gross margin 12.19% TTM."
+  },
+  dongzhou:  {
+    name:"Dongzhou Communication", hq:"China", exch:"Private", mkt:4, listed:false,
+    vintage:"Est. 2024", confidence:"low",
+    flag:"Private company — no public filings. Estimate based on median of comparable listed Chinese antenna OEMs.",
+    sga:0.110, rd:0.036, oh:0.013, ebitda:0.102, dm:0.558, dl:0.045, mfg:0.043,
+    source:"Industry estimate FY2024, benchmarked against listed Chinese antenna OEM medians. No public disclosure."
+  },
+};
+
+const ANTENNA_TYPES = {
+  passive_2port:       { label:"Passive 2-port",        ports:2,  bands:1, hrs:2.5,  kg:4.5,  isMIMO:false, scale:0.28 },
+  passive_4port:       { label:"Passive 4-port",        ports:4,  bands:1, hrs:3.5,  kg:7.2,  isMIMO:false, scale:0.48 },
+  passive_8port:       { label:"Passive 8-port RET",    ports:8,  bands:2, hrs:5.5,  kg:12.8, isMIMO:false, scale:0.76 },
+  passive_12port:      { label:"Passive 12-port RET",   ports:12, bands:3, hrs:7.0,  kg:18.5, isMIMO:false, scale:1.0  },
+  active_mimo_32t32r:  { label:"Active MIMO 32T32R",    ports:32, bands:1, hrs:22.0, kg:28.0, isMIMO:true,  scale:3.8  },
+  active_mimo_64t64r:  { label:"Active MIMO 64T64R",    ports:64, bands:1, hrs:35.0, kg:38.0, isMIMO:true,  scale:6.2  },
+};
+
+// Passive 12-port baseline BoM (representative, ~400 component model compressed into categorized line items with real specs)
+const BOM_12PORT = [
+  // ELEMENTS
+  { id:1,  cat:"Elements",      name:"High-freq element (Type 1727) ×20",        mat:"ADC12 Aluminum",   proc:"Die casting + coating",     weight_g:1088, mat_key:"aluminum_ADC12",  qty:20, unit_cost_usd:0.89 },
+  { id:2,  cat:"Elements",      name:"Low-freq element (Type 0809) ×10",          mat:"ADC12 Aluminum",   proc:"Die casting + coating",     weight_g:1637, mat_key:"aluminum_ADC12",  qty:10, unit_cost_usd:1.72 },
+  { id:3,  cat:"Elements",      name:"Feeder circuit HF (H65 brass) ×8",          mat:"H65 Copper alloy", proc:"Stamping + Sn coating",     weight_g:57,   mat_key:"copper_H65",      qty:8,  unit_cost_usd:0.19 },
+  { id:4,  cat:"Elements",      name:"Feeder circuit LF (H65 brass) ×8",          mat:"H65 Copper alloy", proc:"Stamping + Sn coating",     weight_g:48,   mat_key:"copper_H65",      qty:8,  unit_cost_usd:0.16 },
+  { id:5,  cat:"Elements",      name:"Element fasteners PA66 ×80",                mat:"PA66 Nylon",        proc:"Injection moulding",        weight_g:320,  mat_key:"plastics_PA66",   qty:80, unit_cost_usd:0.22 },
+  { id:6,  cat:"Elements",      name:"Element clips POM ×32",                     mat:"POM Acetal",        proc:"Injection moulding",        weight_g:256,  mat_key:"plastics_POM",    qty:32, unit_cost_usd:0.12 },
+  { id:7,  cat:"Elements",      name:"Element screws SUS304 ×80",                 mat:"SUS304 stainless", proc:"Machining",                 weight_g:128,  mat_key:"steel_SUS304",    qty:80, unit_cost_usd:0.18 },
+  // FEEDER CIRCUIT
+  { id:8,  cat:"Feeder Circuit",name:"Dual-hole junction box ×20",                mat:"ADC12 Aluminum",   proc:"Die casting",               weight_g:480,  mat_key:"aluminum_ADC12",  qty:20, unit_cost_usd:0.43 },
+  { id:9,  cat:"Feeder Circuit",name:"Tri-hole junction box ×12",                 mat:"ADC12 Aluminum",   proc:"Die casting",               weight_g:360,  mat_key:"aluminum_ADC12",  qty:12, unit_cost_usd:0.38 },
+  { id:10, cat:"Feeder Circuit",name:"RF coaxial cable A (50Ω) ×16",             mat:"H65+PTFE",          proc:"Assembly",                  weight_g:180,  mat_key:"copper_PTFE",     qty:16, unit_cost_usd:0.98 },
+  { id:11, cat:"Feeder Circuit",name:"RF coaxial cable B (50Ω) ×9",              mat:"H65+PTFE",          proc:"Assembly",                  weight_g:110,  mat_key:"copper_PTFE",     qty:9,  unit_cost_usd:0.62 },
+  { id:12, cat:"Feeder Circuit",name:"RF connector 7/16 DIN ×4",                 mat:"Brass+PTFE",        proc:"Machining + plating",       weight_g:80,   mat_key:"copper_H65",      qty:4,  unit_cost_usd:2.88 },
+  { id:13, cat:"Feeder Circuit",name:"Connector gasket PTFE ×40",                mat:"PTFE",              proc:"Injection moulding",        weight_g:32,   mat_key:"copper_PTFE",     qty:40, unit_cost_usd:0.09 },
+  { id:14, cat:"Feeder Circuit",name:"Feeder cable clips PA66 ×60",              mat:"PA66 Nylon",        proc:"Injection moulding",        weight_g:180,  mat_key:"plastics_PA66",   qty:60, unit_cost_usd:0.11 },
+  // HOUSING
+  { id:15, cat:"Housing",       name:"Front radome FRP (fibreglass)",             mat:"FRP fibreglass",    proc:"SMC moulding",              weight_g:2800, mat_key:"plastics_FRP",    qty:1,  unit_cost_usd:5.20 },
+  { id:16, cat:"Housing",       name:"Rear cover FRP",                            mat:"FRP fibreglass",    proc:"SMC moulding",              weight_g:1600, mat_key:"plastics_FRP",    qty:1,  unit_cost_usd:3.10 },
+  { id:17, cat:"Housing",       name:"End caps aluminium ×2",                    mat:"AL6061 Aluminum",  proc:"Die casting",               weight_g:420,  mat_key:"aluminum_AL6061", qty:2,  unit_cost_usd:1.40 },
+  { id:18, cat:"Housing",       name:"Sealing gasket EPDM rubber",               mat:"EPDM rubber",       proc:"Extrusion",                 weight_g:180,  mat_key:"plastics_PA66",   qty:1,  unit_cost_usd:0.65 },
+  { id:19, cat:"Housing",       name:"Housing screws SUS304 ×24",                mat:"SUS304 stainless", proc:"Machining",                 weight_g:96,   mat_key:"steel_SUS304",    qty:24, unit_cost_usd:0.28 },
+  { id:20, cat:"Housing",       name:"Cable entry grommet ×4",                   mat:"EPDM rubber",       proc:"Injection moulding",        weight_g:48,   mat_key:"plastics_PA66",   qty:4,  unit_cost_usd:0.22 },
+  // PHASE SHIFTER
+  { id:21, cat:"Phase Shifter", name:"HF transmission module POM ×2",            mat:"POM Acetal",        proc:"Injection moulding",        weight_g:156,  mat_key:"plastics_POM",    qty:2,  unit_cost_usd:1.05 },
+  { id:22, cat:"Phase Shifter", name:"LF transmission module POM ×2",            mat:"POM Acetal",        proc:"Injection moulding",        weight_g:152,  mat_key:"plastics_POM",    qty:2,  unit_cost_usd:1.02 },
+  { id:23, cat:"Phase Shifter", name:"Drive rod ABS+GF ×4",                      mat:"ABS+5%GF",          proc:"Injection moulding",        weight_g:102,  mat_key:"plastics_ABS",    qty:4,  unit_cost_usd:0.38 },
+  { id:24, cat:"Phase Shifter", name:"Adjustment knob POM ×4",                   mat:"POM Acetal",        proc:"Injection moulding",        weight_g:99,   mat_key:"plastics_POM",    qty:4,  unit_cost_usd:0.34 },
+  { id:25, cat:"Phase Shifter", name:"Beam connector POM ×8",                    mat:"POM Acetal",        proc:"Injection moulding",        weight_g:80,   mat_key:"plastics_POM",    qty:8,  unit_cost_usd:0.22 },
+  { id:26, cat:"Phase Shifter", name:"Hexagonal nuts AL6061 ×8",                 mat:"AL6061 Aluminum",  proc:"Machining",                 weight_g:83,   mat_key:"aluminum_AL6061", qty:8,  unit_cost_usd:0.18 },
+  { id:27, cat:"Phase Shifter", name:"Locknuts SUS304 ×16",                      mat:"SUS304 stainless", proc:"Machining",                 weight_g:28,   mat_key:"steel_SUS304",    qty:16, unit_cost_usd:0.12 },
+  // RCU
+  { id:28, cat:"RCU",           name:"RCU main PCB (AISG 2.0 compliant)",        mat:"FR4 PCB + chips",   proc:"SMT assembly",              weight_g:180,  mat_key:"copper_PTFE",     qty:1,  unit_cost_usd:18.50 },
+  { id:29, cat:"RCU",           name:"RCU motor actuator ×4",                    mat:"DC motor + gears",  proc:"Assembly",                  weight_g:120,  mat_key:"steel_SUS304",    qty:4,  unit_cost_usd:5.80 },
+  { id:30, cat:"RCU",           name:"RCU plastic housing POM",                  mat:"POM Acetal",        proc:"Injection moulding",        weight_g:220,  mat_key:"plastics_POM",    qty:1,  unit_cost_usd:1.45 },
+  { id:31, cat:"RCU",           name:"RCU cable harness",                        mat:"Multi-wire cable",  proc:"Assembly",                  weight_g:85,   mat_key:"copper_H65",      qty:1,  unit_cost_usd:3.20 },
+  { id:32, cat:"RCU",           name:"RCU connector weatherproof ×2",            mat:"Brass+rubber",      proc:"Machining",                 weight_g:48,   mat_key:"copper_H65",      qty:2,  unit_cost_usd:2.10 },
+  { id:33, cat:"RCU",           name:"Drive rod assembly ×4",                    mat:"AL6061 + POM",     proc:"Assembly",                  weight_g:360,  mat_key:"aluminum_AL6061", qty:4,  unit_cost_usd:4.20 },
+  // REFLECTOR
+  { id:34, cat:"Reflector",     name:"Main reflector plate AL5052",              mat:"AL5052 Aluminum",  proc:"Sheet metal forming",       weight_g:2200, mat_key:"aluminum_AL5052", qty:1,  unit_cost_usd:4.80 },
+  { id:35, cat:"Reflector",     name:"Parasitic reflector AL5052 ×8",            mat:"AL5052 Aluminum",  proc:"Stamping",                  weight_g:640,  mat_key:"aluminum_AL5052", qty:8,  unit_cost_usd:0.94 },
+  { id:36, cat:"Reflector",     name:"Reflector rivets SUS304 ×40",              mat:"SUS304 stainless", proc:"Cold heading",              weight_g:40,   mat_key:"steel_SUS304",    qty:40, unit_cost_usd:0.08 },
+  // SCREEN (radome inner screen)
+  { id:37, cat:"Screen",        name:"EMC screen AL5052",                        mat:"AL5052 Aluminum",  proc:"Sheet metal + perforation", weight_g:880,  mat_key:"aluminum_AL5052", qty:1,  unit_cost_usd:2.20 },
+  { id:38, cat:"Screen",        name:"Screen fastening screws ×20",              mat:"SUS304 stainless", proc:"Machining",                 weight_g:40,   mat_key:"steel_SUS304",    qty:20, unit_cost_usd:0.10 },
+  // PACKAGING
+  { id:39, cat:"Packaging",     name:"Outer corrugated box",                     mat:"Corrugated board",  proc:"Die cut + print",          weight_g:1800, mat_key:"packaging_box",   qty:1,  unit_cost_usd:1.55 },
+  { id:40, cat:"Packaging",     name:"EPE foam inner protection",                mat:"EPE foam",          proc:"Die cut",                   weight_g:600,  mat_key:"packaging_foam",  qty:1,  unit_cost_usd:1.32 },
+  { id:41, cat:"Packaging",     name:"Polyethylene bag",                         mat:"PE film",           proc:"Extrusion",                 weight_g:80,   mat_key:"plastics_ABS",    qty:1,  unit_cost_usd:0.12 },
+  { id:42, cat:"Packaging",     name:"Label + barcode + documentation",          mat:"Paper + ink",       proc:"Print",                     weight_g:50,   mat_key:"packaging_box",   qty:1,  unit_cost_usd:0.18 },
+  // SUPPORTING
+  { id:43, cat:"Supporting",    name:"Main mounting bracket AL6061",             mat:"AL6061 Aluminum",  proc:"Die casting + anodize",     weight_g:1800, mat_key:"aluminum_AL6061", qty:1,  unit_cost_usd:4.20 },
+  { id:44, cat:"Supporting",    name:"Secondary tilt arm AL6061",                mat:"AL6061 Aluminum",  proc:"Die casting",               weight_g:640,  mat_key:"aluminum_AL6061", qty:1,  unit_cost_usd:1.50 },
+  { id:45, cat:"Supporting",    name:"U-bolt mounting kit HDG steel ×2",         mat:"HDG steel",         proc:"Hot-dip galvanize",         weight_g:480,  mat_key:"steel_HDG",       qty:2,  unit_cost_usd:0.82 },
+  { id:46, cat:"Supporting",    name:"Pole clamp Q235 steel ×2",                mat:"Q235 steel",        proc:"Casting + zinc plate",      weight_g:720,  mat_key:"steel_Q235",      qty:2,  unit_cost_usd:0.68 },
+  { id:47, cat:"Supporting",    name:"Stainless bolts + nuts SUS304 ×32",       mat:"SUS304 stainless", proc:"Machining",                 weight_g:320,  mat_key:"steel_SUS304",    qty:32, unit_cost_usd:0.48 },
+  // OTHERS (connectors, grounding, misc)
+  { id:48, cat:"Others",        name:"N-type connector (weatherproof) ×12",      mat:"Brass + PTFE",      proc:"Machining + plating",       weight_g:240,  mat_key:"copper_H65",      qty:12, unit_cost_usd:1.45 },
+  { id:49, cat:"Others",        name:"Grounding lug AL6061 ×2",                  mat:"AL6061 Aluminum",  proc:"Machining",                 weight_g:24,   mat_key:"aluminum_AL6061", qty:2,  unit_cost_usd:0.18 },
+  { id:50, cat:"Others",        name:"Coaxial surge arrestor ×2",                mat:"Gas discharge tube",proc:"Assembly",                  weight_g:60,   mat_key:"copper_H65",      qty:2,  unit_cost_usd:2.40 },
+  { id:51, cat:"Others",        name:"Misc hardware (tie wraps, clips, tape)",   mat:"Various",           proc:"Various",                   weight_g:120,  mat_key:"plastics_PA66",   qty:1,  unit_cost_usd:0.35 },
+];
+
+// MIMO BoM (32T32R) — simplified, electronics-heavy
+const BOM_MIMO_32 = [
+  { id:1,  cat:"Radio Electronics",name:"Beamforming IC chipset (32 channels)",  mat:"GaAs/RFIC",         proc:"PCB SMT assembly",          weight_g:45,   mat_key:"copper_PTFE",     qty:1,  unit_cost_usd:120.0 },
+  { id:2,  cat:"Radio Electronics",name:"Power amplifier modules ×32",           mat:"GaN PA module",     proc:"Module assembly",           weight_g:320,  mat_key:"copper_PTFE",     qty:32, unit_cost_usd:4.80 },
+  { id:3,  cat:"Radio Electronics",name:"Digital baseband PCB",                  mat:"FR4 + FPGA/DSP",    proc:"SMT assembly",              weight_g:220,  mat_key:"copper_PTFE",     qty:1,  unit_cost_usd:85.0 },
+  { id:4,  cat:"Radio Electronics",name:"RF distribution network PCB",           mat:"PTFE laminate",     proc:"PCB etch + assembly",       weight_g:180,  mat_key:"copper_PTFE",     qty:1,  unit_cost_usd:42.0 },
+  { id:5,  cat:"Radio Electronics",name:"Power supply unit (48V DC)",            mat:"SMPS electronics",  proc:"PCB + magnetics assy",      weight_g:480,  mat_key:"copper_PTFE",     qty:1,  unit_cost_usd:38.0 },
+  { id:6,  cat:"Radio Electronics",name:"Calibration network",                   mat:"PTFE + components", proc:"Assembly",                  weight_g:90,   mat_key:"copper_PTFE",     qty:1,  unit_cost_usd:18.0 },
+  { id:7,  cat:"Antenna Array",    name:"Dual-pol element sub-array ×8",         mat:"ADC12 + H65",       proc:"Die cast + stamp",          weight_g:3200, mat_key:"aluminum_ADC12",  qty:8,  unit_cost_usd:8.50 },
+  { id:8,  cat:"Antenna Array",    name:"RF connector SMA ×64",                  mat:"Brass+PTFE",        proc:"Machining + plating",       weight_g:640,  mat_key:"copper_H65",      qty:64, unit_cost_usd:0.85 },
+  { id:9,  cat:"Housing",         name:"Aluminium heat sink / baseplate",         mat:"AL6061 Aluminum",  proc:"CNC machining + anodize",   weight_g:4200, mat_key:"aluminum_AL6061", qty:1,  unit_cost_usd:28.0 },
+  { id:10, cat:"Housing",         name:"Front radome (IP65 rated)",               mat:"FRP fibreglass",    proc:"SMC moulding",              weight_g:1800, mat_key:"plastics_FRP",    qty:1,  unit_cost_usd:8.50 },
+  { id:11, cat:"Housing",         name:"Rear enclosure AL die cast",              mat:"AL6061 Aluminum",  proc:"Die casting",               weight_g:2800, mat_key:"aluminum_AL6061", qty:1,  unit_cost_usd:18.0 },
+  { id:12, cat:"Housing",         name:"Thermal interface material",              mat:"TIM pad",           proc:"Cut to size",               weight_g:80,   mat_key:"plastics_ABS",    qty:1,  unit_cost_usd:3.50 },
+  { id:13, cat:"Connectors",      name:"eCPRI/OBSAI optical interface ×2",        mat:"SFP+ module",       proc:"Module",                    weight_g:40,   mat_key:"copper_PTFE",     qty:2,  unit_cost_usd:12.0 },
+  { id:14, cat:"Connectors",      name:"DC power connector (weatherproof)",       mat:"Brass+rubber",      proc:"Machining",                 weight_g:65,   mat_key:"copper_H65",      qty:1,  unit_cost_usd:4.80 },
+  { id:15, cat:"Supporting",      name:"Mounting bracket + tilt arm AL6061",      mat:"AL6061 Aluminum",  proc:"Die casting",               weight_g:2400, mat_key:"aluminum_AL6061", qty:1,  unit_cost_usd:9.20 },
+  { id:16, cat:"Packaging",       name:"Heavy-duty corrugated crate",             mat:"Corrugated board",  proc:"Die cut",                   weight_g:3200, mat_key:"packaging_box",   qty:1,  unit_cost_usd:4.80 },
+  { id:17, cat:"Packaging",       name:"Custom foam insert set",                  mat:"EPE + PE foam",     proc:"Die cut",                   weight_g:1200, mat_key:"packaging_foam",  qty:1,  unit_cost_usd:3.20 },
+];
+
+// ============================================================
+// CALCULATION ENGINE
+// ============================================================
+function getLogisticsKey(origin, dest) {
+  const oMap = { china:"china", vietnam:"vietnam", india:"india", germany:"germany" };
+  return `${oMap[origin]}_to_${dest}`;
+}
+
+function getBenchmarkRates(bench) {
+  if (bench === "all_median") {
+    // Ace excluded from median — distressed/loss-making FY2024
+    const vals = Object.values(SUPPLIERS).filter(s => s.name !== "Ace Technologies");
+    const med = arr => arr.slice().sort((a,b)=>a-b)[Math.floor(arr.length/2)];
+    return { sga: med(vals.map(v=>v.sga)), rd: med(vals.map(v=>v.rd)), oh: med(vals.map(v=>v.oh)), mfg: med(vals.map(v=>v.mfg)) };
+  }
+  if (bench === "chinese_median") {
+    const vals = Object.values(SUPPLIERS).filter(s=>s.hq==="China");
+    const med = arr => arr.slice().sort((a,b)=>a-b)[Math.floor(arr.length/2)];
+    return { sga: med(vals.map(v=>v.sga)), rd: med(vals.map(v=>v.rd)), oh: med(vals.map(v=>v.oh)), mfg: med(vals.map(v=>v.mfg)) };
+  }
+  const s = SUPPLIERS[bench];
+  return { sga: s.sga, rd: s.rd, oh: s.oh, mfg: s.mfg };
+}
+
+function calcCost(params) {
+  const { antenna, origin, dest, quality, volume, bench, sens } = params;
+  const aType = ANTENNA_TYPES[antenna];
+  const isMIMO = aType.isMIMO;
+  const scale = aType.scale;
+  const qualMult = { low: 0.82, medium: 1.0, high: 1.15 }[quality];
+
+  // Sensitivity multipliers
+  const alMult  = 1 + (sens.al  / 100);
+  const cuMult  = 1 + (sens.cu  / 100);
+  const labMult = 1 + (sens.lab / 100);
+  const logMult = 1 + (sens.log / 100);
+  const fxMult  = 1 + (sens.fx  / 100);
+  const fxRate  = USD_SEK * fxMult;
+
+  // === DIRECT MATERIAL ===
+  const bom = isMIMO ? BOM_MIMO_32 : BOM_12PORT;
+
+  let matCat = {};
+  let totalMat_usd = 0;
+  bom.forEach(item => {
+    let cost = item.unit_cost_usd * scale * qualMult;
+    // Apply commodity sensitivities
+    if (item.mat_key.startsWith("aluminum")) cost *= alMult;
+    if (item.mat_key.startsWith("copper"))   cost *= cuMult;
+    const cat = item.cat;
+    matCat[cat] = (matCat[cat] || 0) + cost;
+    totalMat_usd += cost;
+  });
+
+  // === DIRECT LABOUR ===
+  const labRate  = LABOUR[origin].rate * labMult;
+  const labHours = aType.hrs;
+  const labour_usd = labRate * labHours;
+
+  // === MANUFACTURING OVERHEAD ===
+  const rates = getBenchmarkRates(bench);
+  const mfg_usd = totalMat_usd * rates.mfg;
+
+  // === CORPORATE OVERHEAD ===
+  const sga_usd  = totalMat_usd * rates.sga;
+  const rd_usd   = totalMat_usd * rates.rd;
+  const oh_usd   = totalMat_usd * rates.oh;
+  const corp_usd = sga_usd + rd_usd + oh_usd;
+
+  // === LOGISTICS ===
+  const logKey = getLogisticsKey(origin, dest);
+  const logData = LOGISTICS[logKey] || { usd: 20, customs: 0 };
+  const baseLog = logData.usd * logMult;
+  const customs_usd = (totalMat_usd + labour_usd + mfg_usd) * (logData.customs || 0);
+  const logistics_usd = baseLog + customs_usd;
+
+  // === TOTAL ===
+  const total_usd = totalMat_usd + labour_usd + mfg_usd + corp_usd + logistics_usd;
+
+  return {
+    total_usd, fxRate,
+    mat:      { total: totalMat_usd, cats: matCat },
+    labour:   labour_usd,
+    mfg:      mfg_usd,
+    sga:      sga_usd,
+    rd:       rd_usd,
+    oh:       oh_usd,
+    corp:     corp_usd,
+    logistics:logistics_usd,
+    customs:  customs_usd,
+    freight:  baseLog,
+    rates, logData,
+    aType, origin, dest, quality, bench
+  };
+}
+
+function sek(usd, fxRate) { return Math.round(usd * fxRate); }
+function fmtSEK(v) { return v < 10000 ? v.toLocaleString('sv-SE') : (v/1000).toFixed(1).replace('.',',') + ' k'; }
+function fmtSEKfull(v) { return v.toLocaleString('sv-SE'); }
+function pct(v, total) { return (v/total*100).toFixed(1) + '%'; }
+
+// ============================================================
+// UI RENDERING
+// ============================================================
+function getParams() {
+  return {
+    antenna: document.getElementById('ctrl-antenna').value,
+    origin:  document.getElementById('ctrl-origin').value,
+    dest:    document.getElementById('ctrl-dest').value,
+    quality: document.getElementById('ctrl-quality').value,
+    volume:  parseInt(document.getElementById('ctrl-volume').value),
+    bench:   document.getElementById('ctrl-supplier-bench').value,
+    sens: {
+      al:  parseFloat(document.getElementById('s-al').value),
+      cu:  parseFloat(document.getElementById('s-cu').value),
+      lab: parseFloat(document.getElementById('s-lab').value),
+      log: parseFloat(document.getElementById('s-log').value),
+      fx:  parseFloat(document.getElementById('s-fx').value),
+    }
+  };
+}
+
+function recalc() {
+  const p = getParams();
+  const r = calcCost(p);
+  renderDashboard(r, p);
+  renderCostModel(r, p);
+}
+
+function renderDashboard(r, p) {
+  const fx = r.fxRate;
+  const tot = sek(r.total_usd, fx);
+  const mat = sek(r.mat.total, fx);
+  const lab = sek(r.labour + r.mfg, fx);
+  const oh  = sek(r.corp, fx);
+
+  document.getElementById('kpi-total').textContent    = fmtSEKfull(tot) + ' kr';
+  document.getElementById('kpi-material').textContent = fmtSEKfull(mat) + ' kr';
+  document.getElementById('kpi-labour').textContent   = fmtSEKfull(lab) + ' kr';
+  document.getElementById('kpi-oh').textContent       = fmtSEKfull(oh)  + ' kr';
+  document.getElementById('dash-antenna-label').textContent = r.aType.label;
+
+  // Waterfall
+  const wfItems = [
+    { label: 'Direct material',     usd: r.mat.total, color: '#7B2D8B' },
+    { label: '  · Elements',        usd: (r.mat.cats['Elements']||0)+(r.mat.cats['Antenna Array']||0), color: '#9B4DAB', indent:true },
+    { label: '  · Feeder circuit',  usd: r.mat.cats['Feeder Circuit']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Housing',         usd: r.mat.cats['Housing']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Phase shifter',   usd: (r.mat.cats['Phase Shifter']||0)+(r.mat.cats['Radio Electronics']||0)+(r.mat.cats['Connectors']||0), color: '#9B4DAB', indent:true },
+    { label: '  · RCU / Electronics',usd:r.mat.cats['RCU']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Reflector',       usd: r.mat.cats['Reflector']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Screen',          usd: r.mat.cats['Screen']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Packaging',       usd: r.mat.cats['Packaging']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Supporting',      usd: r.mat.cats['Supporting']||0, color: '#9B4DAB', indent:true },
+    { label: '  · Others',          usd: r.mat.cats['Others']||0, color: '#9B4DAB', indent:true },
+    { label: 'Direct labour',       usd: r.labour, color: '#2563EB' },
+    { label: 'Manufacturing OH',    usd: r.mfg,    color: '#2563EB' },
+    { label: 'SG&A',                usd: r.sga,    color: '#C97820' },
+    { label: 'R&D',                 usd: r.rd,     color: '#C97820' },
+    { label: 'Other corporate OH',  usd: r.oh,     color: '#C97820' },
+    { label: 'Freight',             usd: r.freight, color: '#2A8A52' },
+    { label: 'Customs duties',      usd: r.customs, color: '#2A8A52' },
+    { label: 'TOTAL',               usd: r.total_usd, color: '#18141C', isBold:true },
+  ].filter(i => i.usd > 0);
+
+  const maxUsd = r.total_usd;
+  const wfHTML = wfItems.map(item => {
+    const valSEK = sek(item.usd, fx);
+    const barW = Math.max(2, (item.usd / maxUsd) * 100);
+    const boldStyle = item.isBold ? 'font-weight:600;color:var(--text-primary);' : '';
+    const labelStyle = item.indent ? 'color:var(--text-muted);font-size:11px;' : '';
+    return `<div class="wf-row">
+      <div class="wf-label" style="${labelStyle}${boldStyle}">${item.label}</div>
+      <div class="wf-bar-wrap">
+        <div class="wf-bar" style="width:${barW}%;background:${item.color};opacity:${item.indent?0.6:1};"></div>
+        <span class="wf-val" style="${boldStyle}">${fmtSEKfull(valSEK)} kr</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('waterfall-container').innerHTML = wfHTML;
+
+  // Sensitivity matrix
+  const factors = [
+    { key:'al',  label:'Aluminum price',   apply:(r0,v)=>calcCost({...p, sens:{...p.sens, al:v}}) },
+    { key:'cu',  label:'Copper price',     apply:(r0,v)=>calcCost({...p, sens:{...p.sens, cu:v}}) },
+    { key:'lab', label:'Labour cost',      apply:(r0,v)=>calcCost({...p, sens:{...p.sens, lab:v}}) },
+    { key:'log', label:'Logistics cost',   apply:(r0,v)=>calcCost({...p, sens:{...p.sens, log:v}}) },
+    { key:'fx',  label:'SEK/USD rate',     apply:(r0,v)=>calcCost({...p, sens:{...p.sens, fx:v}}) },
+  ];
+  const levels = [-20, -10, 0, 10, 20];
+  const baseTotal = r.total_usd * r.fxRate;
+
+  let sensHTML = '';
+  factors.forEach(f => {
+    let cells = levels.map(lv => {
+      const res = f.apply(r, lv);
+      const val = res.total_usd * res.fxRate;
+      const delta = val - baseTotal;
+      const deltaPct = (delta / baseTotal * 100).toFixed(1);
+      if (lv === 0) return `<td class="num"><span class="sens-cell sens-neutral">${fmtSEKfull(Math.round(val))}</span></td>`;
+      const cls = delta > 0 ? (Math.abs(delta/baseTotal) > 0.05 ? 'sens-pos-high' : 'sens-pos-med') : (Math.abs(delta/baseTotal) > 0.05 ? 'sens-neg-high' : 'sens-neg-med');
+      const sign = delta > 0 ? '+' : '';
+      return `<td class="num"><span class="sens-cell ${cls}">${sign}${deltaPct}%</span></td>`;
+    }).join('');
+    sensHTML += `<tr><td>${f.label}</td>${cells}</tr>`;
+  });
+  document.getElementById('sens-tbody').innerHTML = sensHTML;
+
+  // Antenna comparison
+  const antLabels = Object.entries(ANTENNA_TYPES);
+  const baseSens = { al:0, cu:0, lab:0, log:0, fx:0 };
+  let antHTML = '';
+  antLabels.forEach(([key, at]) => {
+    const res = calcCost({...p, antenna: key, sens: baseSens });
+    const valSEK = Math.round(res.total_usd * USD_SEK);
+    const maxRef = calcCost({...p, antenna:'active_mimo_64t64r', sens:baseSens});
+    const maxSEK = Math.round(maxRef.total_usd * USD_SEK);
+    const barW = (valSEK / maxSEK * 100).toFixed(1);
+    const isActive = key === p.antenna;
+    antHTML += `<div class="wf-row" style="margin-bottom:8px;">
+      <div class="wf-label" style="${isActive?'font-weight:600;color:var(--telia-purple);':''}">${at.label}</div>
+      <div class="wf-bar-wrap">
+        <div class="wf-bar" style="width:${barW}%;background:${isActive?'var(--telia-purple)':'var(--border-strong)'};height:18px;"></div>
+        <span class="wf-val">${fmtSEKfull(valSEK)} kr</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('antenna-compare').innerHTML = antHTML;
+}
+
+function renderCostModel(r, p) {
+  const fx = r.fxRate;
+  const tot = r.total_usd;
+
+  // Params summary
+  document.getElementById('cm-params').innerHTML = `
+    <table class="data-table">
+      <tr><td>Antenna type</td><td><strong>${r.aType.label}</strong></td></tr>
+      <tr><td>Production country</td><td><strong>${LABOUR[p.origin].label}</strong> — ${LABOUR[p.origin].rate.toFixed(2)} USD/hr</td></tr>
+      <tr><td>Destination</td><td><strong>${p.dest.charAt(0).toUpperCase()+p.dest.slice(1)}</strong></td></tr>
+      <tr><td>Material quality</td><td><strong>${p.quality.charAt(0).toUpperCase()+p.quality.slice(1)}</strong></td></tr>
+      <tr><td>Corporate OH benchmark</td><td><strong>${p.bench.replace('_',' ')}</strong></td></tr>
+      <tr><td>SEK/USD rate</td><td><strong>${fx.toFixed(2)}</strong></td></tr>
+    </table>`;
+
+  document.getElementById('cm-type-label').textContent = r.aType.label;
+
+  // Summary table
+  const summaryItems = [
+    { label:'Direct Material', usd: r.mat.total, method:'Weight × material price + processing per component' },
+    { label:'Direct Labour',   usd: r.labour,    method:`${r.aType.hrs} hrs × ${LABOUR[p.origin].rate} USD/hr (${LABOUR[p.origin].label} manufacturing wage)` },
+    { label:'Manufacturing OH',usd: r.mfg,       method:`${(r.rates.mfg*100).toFixed(1)}% of direct material (${p.bench} benchmark, incl. energy)` },
+    { label:'SG&A',            usd: r.sga,       method:`${(r.rates.sga*100).toFixed(1)}% of direct material (${p.bench} annual report)` },
+    { label:'R&D',             usd: r.rd,        method:`${(r.rates.rd*100).toFixed(1)}% of direct material (${p.bench} annual report)` },
+    { label:'Other Corporate OH',usd:r.oh,       method:`${(r.rates.oh*100).toFixed(1)}% of direct material (${p.bench} annual report)` },
+    { label:'Freight / logistics',usd:r.freight, method:`Sea/rail freight origin→destination, per unit (${p.origin}→${p.dest})` },
+    { label:'Customs duties',  usd: r.customs,   method:`${((r.logData.customs||0)*100).toFixed(0)}% of (material + labour + mfg) cost at destination` },
+  ];
+
+  let sumHTML = '';
+  summaryItems.forEach(it => {
+    const valSEK = sek(it.usd, fx);
+    if (valSEK < 1) return;
+    sumHTML += `<tr><td>${it.label}</td><td style="font-size:11.5px;color:var(--text-muted);">${it.method}</td><td class="num">${fmtSEKfull(valSEK)}</td><td class="num">${pct(it.usd, tot)}</td></tr>`;
+  });
+  sumHTML += `<tr class="row-total"><td>TOTAL COST / UNIT</td><td></td><td class="num">${fmtSEKfull(sek(tot,fx))} kr</td><td class="num">100%</td></tr>`;
+  document.getElementById('cm-summary-tbody').innerHTML = sumHTML;
+
+  // Detailed table - material breakdown by category
+  const bom = r.aType.isMIMO ? BOM_MIMO_32 : BOM_12PORT;
+  const cats = [...new Set(bom.map(b=>b.cat))];
+  let detHTML = '';
+
+  // Material section
+  detHTML += `<tr class="row-group"><td colspan="6">1 — DIRECT MATERIAL (${(pct(r.mat.total, tot))})</td></tr>`;
+  cats.forEach(cat => {
+    const catTotal = r.mat.cats[cat] || 0;
+    if (catTotal < 0.01) return;
+    const items = bom.filter(b=>b.cat===cat);
+    detHTML += `<tr class="row-sub"><td><strong>${cat}</strong></td><td style="font-size:11px;color:var(--text-muted);">Sub-assembly total</td><td></td><td class="num">${catTotal.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(catTotal,fx))}</td><td class="num">${pct(catTotal,tot)}</td></tr>`;
+    items.slice(0,4).forEach(item => {
+      const scale = r.aType.scale;
+      const qm = {low:0.82,medium:1.0,high:1.15}[p.quality];
+      let c = item.unit_cost_usd * scale * qm;
+      const rm = RAW_MATERIALS[item.mat_key];
+      detHTML += `<tr class="row-sub2"><td>${item.name}</td><td style="font-size:11px;color:var(--text-muted);">${item.proc}</td><td style="font-size:11px;color:var(--text-muted);">${rm?rm.source:'—'}</td><td class="num">${c.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(c,fx))}</td><td class="num">${pct(c,tot)}</td></tr>`;
+    });
+    if (items.length > 4) detHTML += `<tr class="row-sub2"><td colspan="3" style="color:var(--text-muted);font-style:italic;">… +${items.length-4} more components (see BoM tab)</td><td></td><td></td><td></td></tr>`;
+  });
+
+  // Labour
+  detHTML += `<tr class="row-group"><td colspan="6">2 — DIRECT LABOUR (${pct(r.labour,tot)})</td></tr>`;
+  detHTML += `<tr class="row-sub"><td>Worker wages & salaries</td><td style="font-size:11px;color:var(--text-muted);">${r.aType.hrs} labour hrs/antenna × ${LABOUR[p.origin].rate} USD/hr</td><td style="font-size:11px;color:var(--text-muted);">${LABOUR[p.origin].source}</td><td class="num">${r.labour.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(r.labour,fx))}</td><td class="num">${pct(r.labour,tot)}</td></tr>`;
+
+  // Manufacturing
+  detHTML += `<tr class="row-group"><td colspan="6">3 — MANUFACTURING OVERHEAD (${pct(r.mfg,tot)})</td></tr>`;
+  detHTML += `<tr class="row-sub"><td>Machinery, utilities & energy (rolled in)</td><td style="font-size:11px;color:var(--text-muted);">${(r.rates.mfg*100).toFixed(1)}% × direct material</td><td style="font-size:11px;color:var(--text-muted);">${p.bench} annual report</td><td class="num">${r.mfg.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(r.mfg,fx))}</td><td class="num">${pct(r.mfg,tot)}</td></tr>`;
+
+  // Corporate
+  detHTML += `<tr class="row-group"><td colspan="6">4 — CORPORATE OVERHEAD (${pct(r.corp,tot)})</td></tr>`;
+  [['SG&A', r.sga, r.rates.sga], ['R&D', r.rd, r.rates.rd], ['Other corporate OH', r.oh, r.rates.oh]].forEach(([name, val, rate]) => {
+    detHTML += `<tr class="row-sub"><td>${name}</td><td style="font-size:11px;color:var(--text-muted);">${(rate*100).toFixed(1)}% × direct material</td><td style="font-size:11px;color:var(--text-muted);">${p.bench} annual report / industry estimate</td><td class="num">${val.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(val,fx))}</td><td class="num">${pct(val,tot)}</td></tr>`;
+  });
+
+  // Logistics
+  detHTML += `<tr class="row-group"><td colspan="6">5 — LOGISTICS & CUSTOMS (${pct(r.logistics,tot)})</td></tr>`;
+  detHTML += `<tr class="row-sub"><td>Sea/rail freight + last mile</td><td style="font-size:11px;color:var(--text-muted);">${p.origin}→${p.dest}, ${r.logData.mode||'—'}</td><td style="font-size:11px;color:var(--text-muted);">Freightos index 2023</td><td class="num">${r.freight.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(r.freight,fx))}</td><td class="num">${pct(r.freight,tot)}</td></tr>`;
+  if (r.customs > 0.01) detHTML += `<tr class="row-sub"><td>Customs duties</td><td style="font-size:11px;color:var(--text-muted);">${((r.logData.customs||0)*100).toFixed(0)}% of CIF value</td><td style="font-size:11px;color:var(--text-muted);">EAEU tariff schedule</td><td class="num">${r.customs.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(r.customs,fx))}</td><td class="num">${pct(r.customs,tot)}</td></tr>`;
+
+  detHTML += `<tr class="row-total"><td colspan="3">TOTAL DELIVERED COST PER UNIT</td><td class="num">${tot.toFixed(2)}</td><td class="num">${fmtSEKfull(sek(tot,fx))} kr</td><td class="num">100%</td></tr>`;
+  document.getElementById('cm-detail-tbody').innerHTML = detHTML;
+
+  // Logistics table
+  const p2 = getParams();
+  const origins = ['china', 'vietnam', 'india', 'germany'];
+  const dests = ['sweden', 'finland', 'norway', 'denmark', 'estonia', 'latvia', 'lithuania', 'kazakhstan'];
+  let logHTML = '';
+  origins.forEach(o => {
+    dests.forEach(d => {
+      const key = `${o}_to_${d}`;
+      const ld = LOGISTICS[key];
+      if (!ld) return;
+      const isActive = o === p2.origin && d === p2.dest;
+      const custPct = ((ld.customs||0)*100).toFixed(0) + (ld.customs ? '%' : '—');
+      logHTML += `<tr style="${isActive?'background:var(--telia-purple-pale);font-weight:600;':''}">
+        <td>${LABOUR[o].label} → ${d.charAt(0).toUpperCase()+d.slice(1)}</td>
+        <td>${ld.mode}</td>
+        <td>${custPct}</td>
+        <td class="num">${ld.usd.toFixed(0)}</td>
+        <td class="num">${fmtSEKfull(Math.round(ld.usd*USD_SEK))}</td>
+        <td style="font-size:11px;color:var(--text-muted);">${ld.source}</td>
+      </tr>`;
+    });
+  });
+  document.getElementById('logistics-tbody').innerHTML = logHTML;
+}
+
+// ============================================================
+// BOM PAGE
+// ============================================================
+let currentBomType = 'passive_12port';
+function setBomType(type, el) {
+  currentBomType = type;
+  document.querySelectorAll('.antenna-type-badge').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const at = ANTENNA_TYPES[type];
+  document.getElementById('bom-title-label').textContent = at.label;
+  // Update category filter options for MIMO
+  const catSel = document.getElementById('bom-filter-cat');
+  if (at.isMIMO) {
+    catSel.innerHTML = '<option value="all">All categories</option><option>Radio Electronics</option><option>Antenna Array</option><option>Housing</option><option>Connectors</option><option>Supporting</option><option>Packaging</option>';
+  } else {
+    catSel.innerHTML = '<option value="all">All categories</option><option>Elements</option><option>Feeder Circuit</option><option>Housing</option><option>Phase Shifter</option><option>RCU</option><option>Reflector</option><option>Screen</option><option>Packaging</option><option>Supporting</option><option>Others</option>';
+  }
+  renderBom();
+}
+
+function renderBom() {
+  const p = getParams();
+  const at = ANTENNA_TYPES[currentBomType];
+  const bom = at.isMIMO ? BOM_MIMO_32 : BOM_12PORT;
+  const filterCat = document.getElementById('bom-filter-cat').value;
+  const qm = {low:0.82,medium:1.0,high:1.15}[p.quality];
+  const fx = USD_SEK;
+
+  const rows = bom.filter(item => filterCat === 'all' || item.cat === filterCat);
+  let html = '';
+  rows.forEach(item => {
+    const rm = RAW_MATERIALS[item.mat_key];
+    const cost = item.unit_cost_usd * at.scale * qm;
+    const costSEK = Math.round(cost * fx);
+    html += `<tr>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">${item.id}</td>
+      <td><span class="pill pill-purple">${item.cat}</span></td>
+      <td style="font-size:12.5px;">${item.name}</td>
+      <td style="font-size:12px;color:var(--text-secondary);">${item.mat}</td>
+      <td style="font-size:12px;color:var(--text-secondary);">${item.proc}</td>
+      <td class="num">${item.weight_g.toLocaleString()}</td>
+      <td class="num">${rm ? rm.price.toLocaleString() : '—'}</td>
+      <td class="num">${cost.toFixed(2)}</td>
+      <td class="num">${fmtSEKfull(costSEK)}</td>
+      <td style="font-size:10.5px;color:var(--text-muted);">${rm ? rm.source : '—'}</td>
+    </tr>`;
+  });
+  document.getElementById('bom-tbody').innerHTML = html;
+}
+
+// ============================================================
+// SUPPLIER PAGE
+// ============================================================
+function renderSuppliers() {
+  let html = '';
+  Object.entries(SUPPLIERS).forEach(([key, s]) => {
+    const totalOH = s.sga + s.rd + s.oh;
+    // Data quality badge
+    let qualBadge = '';
+    if (!s.listed) {
+      qualBadge = `<span class="pill pill-amber">Industry est.</span>`;
+    } else if (s.confidence === 'high') {
+      qualBadge = `<span class="pill pill-green">Verified filing</span>`;
+    } else {
+      qualBadge = `<span class="pill pill-gray">Filing (partial)</span>`;
+    }
+    // Vintage badge
+    const vintBadge = `<span style="font-size:10px;color:var(--text-muted);display:block;margin-top:3px;">${s.vintage||'—'}</span>`;
+    // Warning flag
+    const hasFlag = s.flag && s.flag.startsWith('⚠');
+    const isDistressed = key === 'ace';
+    const isStructural = key === 'commscope';
+    const rowStyle = isDistressed ? 'opacity:0.6;' : isStructural ? 'background:var(--warning-bg);' : '';
+    const nameCell = `<strong>${s.name}</strong>${hasFlag ? `<span style="color:var(--amber);margin-left:4px;font-size:12px;" title="${s.flag.replace(/"/g,"'")}">⚠</span>` : ''}${vintBadge}`;
+    const ebitdaColor = s.ebitda < 0 ? 'color:var(--red);' : s.ebitda < 0.07 ? 'color:var(--amber);' : 'color:var(--green);';
+    html += `<tr style="${rowStyle}">
+      <td>${nameCell}</td>
+      <td>${s.hq}</td>
+      <td style="font-size:11px;color:var(--text-muted);">${s.exch}</td>
+      <td class="num">${s.mkt}%</td>
+      <td class="num">${(s.sga*100).toFixed(1)}%</td>
+      <td class="num">${(s.rd*100).toFixed(1)}%</td>
+      <td class="num">${(s.oh*100).toFixed(1)}%</td>
+      <td class="num"><strong>${(totalOH*100).toFixed(1)}%</strong></td>
+      <td class="num" style="${ebitdaColor}font-weight:600;">${(s.ebitda*100).toFixed(1)}%</td>
+      <td class="num">${(s.dm*100).toFixed(1)}%</td>
+      <td>${qualBadge}</td>
+    </tr>`;
+    // Flag row
+    if (s.flag) {
+      const flagColor = s.flag.startsWith('⚠') ? 'var(--warning-bg)' : 'var(--bg)';
+      const flagIcon = s.flag.startsWith('⚠') ? '⚠' : 'ℹ';
+      const flagText = s.flag.replace(/^⚠\s*/,'');
+      html += `<tr style="background:${flagColor};"><td colspan="11" style="padding:4px 12px 8px 28px;font-size:11px;color:var(--text-secondary);font-style:italic;">${flagIcon} ${flagText}<br><span style="color:var(--text-muted);font-size:10.5px;">Source: ${s.source}</span></td></tr>`;
+    }
+  });
+  // Add median row (excl Ace)
+  const forMedian = Object.entries(SUPPLIERS).filter(([k]) => k !== 'ace');
+  const med = arr => arr.slice().sort((a,b)=>a-b)[Math.floor(arr.length/2)];
+  const mSGA = med(forMedian.map(([,s])=>s.sga));
+  const mRD  = med(forMedian.map(([,s])=>s.rd));
+  const mOH  = med(forMedian.map(([,s])=>s.oh));
+  const mOHtot = mSGA+mRD+mOH;
+  const mEBITDA = med(forMedian.map(([,s])=>s.ebitda));
+  const mDM  = med(forMedian.map(([,s])=>s.dm));
+  html += `<tr style="background:var(--telia-purple-pale);font-weight:600;">
+    <td><strong>MEDIAN (excl. Ace)</strong><span style="font-size:10px;color:var(--text-muted);display:block;">9 suppliers</span></td>
+    <td colspan="3"></td>
+    <td class="num">${(mSGA*100).toFixed(1)}%</td>
+    <td class="num">${(mRD*100).toFixed(1)}%</td>
+    <td class="num">${(mOH*100).toFixed(1)}%</td>
+    <td class="num"><strong>${(mOHtot*100).toFixed(1)}%</strong></td>
+    <td class="num" style="color:var(--green);font-weight:700;">${(mEBITDA*100).toFixed(1)}%</td>
+    <td class="num">${(mDM*100).toFixed(1)}%</td>
+    <td><span class="pill pill-purple">Benchmark</span></td>
+  </tr>`;
+  document.getElementById('supplier-tbody').innerHTML = html;
+
+  // Bar charts
+  const colors = { sga:'#7B2D8B', rd:'#2563EB', oh:'#C97820' };
+  let barsHTML = '';
+  Object.values(SUPPLIERS).forEach(s => {
+    const totalOH = (s.sga + s.rd + s.oh) * 100;
+    const maxOH = 40;
+    barsHTML += `<div class="supplier-bar-row">
+      <div class="supplier-name">${s.name.split(' ')[0]}</div>
+      <div class="supplier-bars">
+        <div style="display:flex;gap:2px;">
+          <div class="supplier-bar" style="width:${(s.sga*100/maxOH*100).toFixed(0)}%;background:#7B2D8B;" title="SG&A ${(s.sga*100).toFixed(1)}%"></div>
+          <div class="supplier-bar" style="width:${(s.rd*100/maxOH*100).toFixed(0)}%;background:#2563EB;" title="R&D ${(s.rd*100).toFixed(1)}%"></div>
+          <div class="supplier-bar" style="width:${(s.oh*100/maxOH*100).toFixed(0)}%;background:#C97820;" title="OH ${(s.oh*100).toFixed(1)}%"></div>
+        </div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-secondary);min-width:36px;text-align:right;">${totalOH.toFixed(1)}%</div>
+    </div>`;
+  });
+  barsHTML += `<div style="display:flex;gap:12px;margin-top:12px;font-size:11px;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#7B2D8B;border-radius:2px;display:inline-block;"></span>SG&A</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#2563EB;border-radius:2px;display:inline-block;"></span>R&D</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#C97820;border-radius:2px;display:inline-block;"></span>Other OH</span>
+  </div>`;
+  document.getElementById('supplier-bars-container').innerHTML = barsHTML;
+
+  // EBITDA bars
+  let ebitdaHTML = '';
+  const maxEBITDA = 25;
+  Object.values(SUPPLIERS).forEach(s => {
+    const pctVal = (s.ebitda * 100).toFixed(1);
+    const barW = Math.min(100, (s.ebitda * 100 / maxEBITDA * 100)).toFixed(0);
+    const color = s.ebitda > 0.15 ? '#2A8A52' : s.ebitda > 0.08 ? '#C97820' : '#D43B3B';
+    ebitdaHTML += `<div class="supplier-bar-row">
+      <div class="supplier-name">${s.name.split(' ')[0]}</div>
+      <div style="flex:1;">
+        <div class="supplier-bar" style="width:${barW}%;background:${color};height:14px;border-radius:3px;"></div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-secondary);min-width:40px;text-align:right;">${pctVal}%</div>
+    </div>`;
+  });
+  document.getElementById('ebitda-bars-container').innerHTML = ebitdaHTML;
+}
+
+// ============================================================
+// DATA INPUTS PAGE
+// ============================================================
+function renderDataInputs() {
+  // Raw materials
+  let rmHTML = '';
+  Object.entries(RAW_MATERIALS).forEach(([key, rm]) => {
+    const sekVal = Math.round(rm.price * USD_SEK);
+    rmHTML += `<tr><td>${rm.label}</td><td class="num">${rm.price.toLocaleString()}</td><td class="num">${sekVal.toLocaleString()}</td><td style="font-size:10.5px;color:var(--text-muted);">${rm.source}</td></tr>`;
+  });
+  document.getElementById('raw-mat-tbody').innerHTML = rmHTML;
+
+  // Labour
+  let labHTML = '';
+  Object.entries(LABOUR).forEach(([key, l]) => {
+    const sekVal = (l.rate * USD_SEK).toFixed(2);
+    labHTML += `<tr><td>${l.label}</td><td class="num">${l.rate.toFixed(2)}</td><td class="num">${sekVal}</td><td style="font-size:10.5px;color:var(--text-muted);">${l.source}</td></tr>`;
+  });
+  document.getElementById('labour-tbody').innerHTML = labHTML;
+
+  // Logistics input
+  let logHTML = '';
+  Object.entries(LOGISTICS).slice(0,16).forEach(([key, ld]) => {
+    const routeLabel = key.replace(/_/g,' ').replace('to',' →');
+    const sekVal = Math.round(ld.usd * USD_SEK);
+    logHTML += `<tr><td style="font-size:12px;">${routeLabel}</td><td class="num">${ld.usd}</td><td class="num">${sekVal}</td><td style="font-size:10.5px;color:var(--text-muted);">${ld.source}</td></tr>`;
+  });
+  document.getElementById('logistics-input-tbody').innerHTML = logHTML;
+
+  // Antenna params
+  let antHTML = '';
+  Object.entries(ANTENNA_TYPES).forEach(([key, at]) => {
+    antHTML += `<tr><td>${at.label}</td><td class="num">${at.ports}</td><td class="num">${at.bands}</td><td class="num">${at.hrs}</td><td class="num">${at.kg}</td><td style="font-size:11px;color:var(--text-muted);">${at.isMIMO?'MIMO: separate cost logic for electronics':'Based on Tongyu/Kathrein production data + industry benchmark'}</td></tr>`;
+  });
+  document.getElementById('antenna-params-tbody').innerHTML = antHTML;
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'bom') renderBom();
+  if (id === 'suppliers') renderSuppliers();
+  if (id === 'data_inputs') renderDataInputs();
+}
+
+function resetSensitivity() {
+  ['s-al','s-cu','s-lab','s-log','s-fx'].forEach(id => {
+    document.getElementById(id).value = 0;
+    document.getElementById(id+'-val').textContent = '0%';
+  });
+  recalc();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+recalc();
+</script>
+</body>
+</html>
